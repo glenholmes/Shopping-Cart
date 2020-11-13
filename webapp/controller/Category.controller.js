@@ -262,7 +262,7 @@ sap.ui.define([
 		 */
 		onFilter: function () {
 			// load asynchronous XML fragment
-			if (!this.byId("categoryFilterDialog")) {
+			if (!this.byId("categoryFilterDialogtest")) {
 				Fragment.load({
 					id: this.getView().getId(),
 					name: "sap.ui.demo.cart.view.CategoryFilterDialog",
