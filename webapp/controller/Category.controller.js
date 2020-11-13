@@ -19,7 +19,7 @@ sap.ui.define([
 	"use strict";
 
 	return BaseController.extend("sap.ui.demo.cart.controller.Category", {
-		formatter : formatter,
+		formatter: formatter,
 		// Define filterPreviousValues as global variables because they need to be accessed from different functions
 		_iLowFilterPreviousValue: 0,
 		_iHighFilterPreviousValue: 5000,
@@ -38,7 +38,7 @@ sap.ui.define([
 			this._oRouter.getRoute("comparisonCart").attachMatched(this._loadCategories, this);
 		},
 
-		_loadCategories: function(oEvent) {
+		_loadCategories: function (oEvent) {
 			var bSmallScreen = this.getModel("appView").getProperty("/smallScreenMode"),
 				sRouteName = oEvent.getParameter("name");
 
@@ -58,10 +58,10 @@ sap.ui.define([
 			oModel.metadataLoaded().then(function () {
 				var oView = this.getView(),
 					sPath = "/" + this.getModel().createKey("ProductCategories", {
-					Category: sId
-				});
+						Category: sId
+					});
 				oView.bindElement({
-					path : sPath,
+					path: sPath,
 					parameters: {
 						expand: "Products"
 					},
@@ -83,7 +83,7 @@ sap.ui.define([
 		 */
 		_loadSuppliers: function () {
 			var oModel = this.getModel();
-			oModel.read("/Products", {
+			oModel.read("/aProducts", {
 				success: function (oData) {
 					var aProducts = oData.results,
 						aSuppliers = [];
@@ -98,19 +98,24 @@ sap.ui.define([
 
 					// create the unique suppliers array as array of of objects
 					aUniqueSuppliers.map(function (sSupplierName, iIndex, aUniqueSuppliers) {
-						aUniqueSuppliers[iIndex] = {SupplierName: sSupplierName};
+						aUniqueSuppliers[iIndex] = {
+							SupplierName: sSupplierName
+						};
 					});
 					this.getModel("view").setProperty("/Suppliers", aUniqueSuppliers);
-				}.bind(this)
+				}.bind(this),
+				error: function (errorMsg) {
+					jQuery.sap.log.error("UI5 training errors" + errorMsg);
+				}
 			});
 
 			this._clearComparison();
 		},
 
-		fnDataReceived: function() {
+		fnDataReceived: function () {
 			var oList = this.byId("productList");
 			var aListItems = oList.getItems();
-			aListItems.some(function(oItem) {
+			aListItems.some(function (oItem) {
 				if (oItem.getBindingContext().sPath === "/Products('" + this._sProductId + "')") {
 					oList.setSelectedItem(oItem);
 					return true;
@@ -122,7 +127,7 @@ sap.ui.define([
 		 * Event handler to determine which list item is selected
 		 * @param {sap.ui.base.Event} oEvent the list select event
 		 */
-		onProductListSelect : function (oEvent) {
+		onProductListSelect: function (oEvent) {
 			this._showProduct(oEvent);
 		},
 
@@ -130,7 +135,6 @@ sap.ui.define([
 		 * Event handler to determine which sap.m.ObjectListItem is pressed
 		 * @param {sap.ui.base.Event} oEvent the sap.m.ObjectListItem press event
 		 */
-
 
 		onProductDetails: function (oEvent) {
 			var oBindContext;
@@ -158,11 +162,11 @@ sap.ui.define([
 		 * @param oEvent {sap.ui.base.Event} the press event of the sap.m.Button
 		 * @private
 		 */
-		_applyFilter : function (oEvent) {
+		_applyFilter: function (oEvent) {
 			var oList = this.byId("productList"),
 				oBinding = oList.getBinding("items"),
 				aSelectedFilterItems = oEvent.getParameter("filterItems"),
-				oCustomFilter =  this.byId("categoryFilterDialog").getFilterItems()[1],
+				oCustomFilter = this.byId("categoryFilterDialog").getFilterItems()[1],
 				oFilter,
 				oCustomKeys = {},
 				aFilters = [],
@@ -171,8 +175,10 @@ sap.ui.define([
 				aSupplierFilters = [];
 
 			// Add the slider custom filter if the user selects some values
-			if (oCustomFilter.getCustomControl().getAggregation("content")[0].getValue() !== oCustomFilter.getCustomControl().getAggregation("content")[0].getMin() ||
-				oCustomFilter.getCustomControl().getAggregation("content")[0].getValue2() !== oCustomFilter.getCustomControl().getAggregation("content")[0].getMax()) {
+			if (oCustomFilter.getCustomControl().getAggregation("content")[0].getValue() !== oCustomFilter.getCustomControl().getAggregation(
+					"content")[0].getMin() ||
+				oCustomFilter.getCustomControl().getAggregation("content")[0].getValue2() !== oCustomFilter.getCustomControl().getAggregation(
+					"content")[0].getMax()) {
 				aSelectedFilterItems.push(oCustomFilter);
 			}
 			aSelectedFilterItems.forEach(function (oItem) {
@@ -180,45 +186,56 @@ sap.ui.define([
 					iValueLow,
 					iValueHigh;
 				switch (sFilterKey) {
-					case "Available":
-						oFilter = new Filter("Status", FilterOperator.EQ, "A");
-						aAvailableFilters.push(oFilter);
-						break;
+				case "Available":
+					oFilter = new Filter("Status", FilterOperator.EQ, "A");
+					aAvailableFilters.push(oFilter);
+					break;
 
-					case "OutOfStock":
-						oFilter = new Filter("Status", FilterOperator.EQ, "O");
-						aAvailableFilters.push(oFilter);
-						break;
+				case "OutOfStock":
+					oFilter = new Filter("Status", FilterOperator.EQ, "O");
+					aAvailableFilters.push(oFilter);
+					break;
 
-					case "Discontinued":
-						oFilter = new Filter("Status", FilterOperator.EQ, "D");
-						aAvailableFilters.push(oFilter);
-						break;
+				case "Discontinued":
+					oFilter = new Filter("Status", FilterOperator.EQ, "D");
+					aAvailableFilters.push(oFilter);
+					break;
 
-					case "Price":
-						iValueLow = oItem.getCustomControl().getAggregation("content")[0].getValue();
-						iValueHigh = oItem.getCustomControl().getAggregation("content")[0].getValue2();
-						oFilter = new Filter("Price", FilterOperator.BT, iValueLow, iValueHigh);
-						aPriceFilters.push(oFilter);
-						oCustomKeys["priceKey"] = {Price: true};
-						break;
+				case "Price":
+					iValueLow = oItem.getCustomControl().getAggregation("content")[0].getValue();
+					iValueHigh = oItem.getCustomControl().getAggregation("content")[0].getValue2();
+					oFilter = new Filter("Price", FilterOperator.BT, iValueLow, iValueHigh);
+					aPriceFilters.push(oFilter);
+					oCustomKeys["priceKey"] = {
+						Price: true
+					};
+					break;
 
-					default:
-						oFilter = new Filter("SupplierName", FilterOperator.EQ, sFilterKey);
-						aSupplierFilters.push(oFilter);
+				default:
+					oFilter = new Filter("SupplierName", FilterOperator.EQ, sFilterKey);
+					aSupplierFilters.push(oFilter);
 
 				}
 			});
 			if (aAvailableFilters.length > 0) {
-				aFilters.push(new Filter({filters: aAvailableFilters}));
+				aFilters.push(new Filter({
+					filters: aAvailableFilters
+				}));
 			}
 			if (aPriceFilters.length > 0) {
-				aFilters.push(new Filter({filters: aPriceFilters}));
+				aFilters.push(new Filter({
+					filters: aPriceFilters
+				}));
 			}
 			if (aSupplierFilters.length > 0) {
-				aFilters.push(new Filter({filters: aSupplierFilters}));
+				aFilters.push(new Filter({
+					filters: aSupplierFilters
+				}));
 			}
-			oFilter = new Filter({filters: aFilters, and: true});
+			oFilter = new Filter({
+				filters: aFilters,
+				and: true
+			});
 			if (aFilters.length > 0) {
 				oBinding.filter(oFilter);
 				this.byId("categoryInfoToolbar").setVisible(true);
@@ -228,7 +245,7 @@ sap.ui.define([
 				var oKeys = Object.assign(oFilterKey, oCustomKeys);
 				for (var key in oKeys) {
 					if (oKeys.hasOwnProperty(key)) {
-						sText = sText + sSeparator  + this.getResourceBundle().getText(key, [this._iLowFilterPreviousValue, this._iHighFilterPreviousValue]);
+						sText = sText + sSeparator + this.getResourceBundle().getText(key, [this._iLowFilterPreviousValue, this._iHighFilterPreviousValue]);
 						sSeparator = ", ";
 					}
 				}
@@ -250,7 +267,7 @@ sap.ui.define([
 					id: this.getView().getId(),
 					name: "sap.ui.demo.cart.view.CategoryFilterDialog",
 					controller: this
-				}).then(function(oDialog){
+				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					this.getView().addDependent(oDialog);
 					oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
@@ -324,9 +341,9 @@ sap.ui.define([
 			var sItem1Id = this.getModel("comparison").getProperty("/item1");
 			var sItem2Id = this.getModel("comparison").getProperty("/item2");
 			this._oRouter.navTo("comparison", {
-				id : oProduct.Category,
-				item1Id : (sItem1Id ? sItem1Id : oProduct.ProductId),
-				item2Id : (sItem1Id && sItem1Id != oProduct.ProductId ? oProduct.ProductId : sItem2Id)
+				id: oProduct.Category,
+				item1Id: (sItem1Id ? sItem1Id : oProduct.ProductId),
+				item2Id: (sItem1Id && sItem1Id != oProduct.ProductId ? oProduct.ProductId : sItem2Id)
 			}, true);
 		},
 		/**

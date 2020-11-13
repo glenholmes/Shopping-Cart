@@ -5,7 +5,7 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast"
-], function(
+], function (
 	BaseController,
 	JSONModel,
 	Device,
@@ -34,7 +34,7 @@ sap.ui.define([
 
 			var oEditButton = this.byId("editButton");
 			oEditButton.addEventDelegate({
-				onAfterRendering : function () {
+				onAfterRendering: function () {
 					oEditButton.focus();
 				}
 			});
@@ -201,8 +201,7 @@ sap.ui.define([
 					// update model
 					oCartModel.setProperty("/" + sCollection, Object.assign({}, oCollectionEntries));
 
-					MessageToast.show(oBundle.getText("cartDeleteDialogConfirmDeleteMsg",
-						[sEntryName]));
+					MessageToast.show(oBundle.getText("cartDeleteDialogConfirmDeleteMsg", [sEntryName]));
 				}
 			});
 		},
